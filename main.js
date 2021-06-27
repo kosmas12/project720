@@ -28,8 +28,8 @@ async function hangman(message) {
 
     var hangman_msg = await message.channel.send(hangman_embed);
 
-    const lettersCorrect = [];
-    const lettersIncorrect = [];
+    const correct_letters = [];
+    const incorrect_letters = [];
 
     var word_found = false;
     var guessed_letter;
@@ -43,7 +43,7 @@ async function hangman(message) {
                 guessed_letter = collected.first().content.substr(0, 1).toLowerCase();
             });
 
-        if (lettersCorrect.includes(guessed_letter) || lettersIncorrect.includes(guessed_letter)) {
+        if (correct_letters.includes(guessed_letter) || incorrect_letters.includes(guessed_letter)) {
             await message.channel.send("Letter already guessed");
             continue;
         }
@@ -52,12 +52,12 @@ async function hangman(message) {
 
         // If the guessed letter was correct
         if (word.includes(guessed_letter)) {
-            if (!lettersCorrect.includes(guessed_letter)) {
-                lettersCorrect.push(guessed_letter);
+            if (!correct_letters.includes(guessed_letter)) {
+                correct_letters.push(guessed_letter);
 
                 // Edit embed letters to add to the footer, if not found replace with _
                 embed_letters = word.split("")
-                                .map(char => lettersCorrect
+                                .map(char => correct_letters
                                             .includes(char) ? char : "_")
                                 .join("");
 
@@ -69,7 +69,7 @@ async function hangman(message) {
                 await hangman_msg.edit(edit_embed);
             }
         } else {
-            lettersIncorrect.push(guessed_letter);
+            incorrect_letters.push(guessed_letter);
         }
 
         if (embed_letters === word) {
