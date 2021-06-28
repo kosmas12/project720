@@ -69,24 +69,26 @@ async function hangman(message) {
         if (word.includes(guessed_letter)) {
             if (!correct_letters.includes(guessed_letter)) {
                 correct_letters.push(guessed_letter);
-
-                // Edit embed letters to add to the footer, if not found replace with _
-                embed_letters = word.split("")
-                                .map(char => correct_letters
-                                            .includes(char) ? char : "_")
-                                .join("");
-
-                // Edit embed with new letters
-                const edit_embed = new Discord.MessageEmbed()
-                                   .setTitle('A game of Hangman')
-                                   .setFooter(embed_letters)
-                                   .setImage(hangman_imgs[incorrect_letters.length]); //sets the hangman image
-
-                await hangman_msg.edit(edit_embed);
             }
         } else {
             incorrect_letters.push(guessed_letter);
         }
+
+        
+        // Edit embed letters to add to the footer, if not found replace with _
+        embed_letters = word.split("")
+                        .map(char => correct_letters
+                                    .includes(char) ? char : "_")
+                        .join("");
+
+        // Edit embed with new letters
+        const edit_embed = new Discord.MessageEmbed()
+                            .setTitle('A game of Hangman')
+                            .setDescription(incorrect_letters.join(", "))
+                            .setFooter(embed_letters)
+                            .setImage(hangman_imgs[incorrect_letters.length]); //sets the hangman image
+
+        await hangman_msg.edit(edit_embed);
 
         if (embed_letters === word) {
             word_found = true;
