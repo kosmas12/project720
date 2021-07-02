@@ -9,7 +9,7 @@ client.on("ready", () => {
 
 client.login(token);
 
-async function hangman(message) {
+async function hangman(message, args) {
     const word = rand_words();
 
     //array with images of hangman
@@ -28,6 +28,12 @@ async function hangman(message) {
     
     await message.channel.send("The word is " + word);
 
+    //creates a solo variable and sets it to true if the solo argument is used
+    var solo = false
+    if (args[0] && args[0].toLowerCase() === "solo") solo = true
+
+    console.log(solo)
+
     var embed_letters = "";
 
     // Fill embed with _ for the letters
@@ -37,7 +43,7 @@ async function hangman(message) {
 
     // Create an embed to start
     var hangman_embed = new Discord.MessageEmbed()
-                          .setTitle('A game of Hangman')
+                          .setTitle(`A game of Hangman${solo ? " (solo mode)" : ''}`)
                           .setFooter(embed_letters)
                           .setImage(hangman_imgs[0]); //sets the hangman image
 
@@ -52,7 +58,7 @@ async function hangman(message) {
     while (!word_found)  {
 
         // Wait for the next message from the person who started the game and get its first letter as the guess
-        await message.channel.awaitMessages(m => m.author.id === message.author.id,
+        await message.channel.awaitMessages(m => solo ? m.author.id === message.author.id : true,
             { max: 1 })
             .then(collected => {
                 guessed_letter = collected.first().content.substr(0, 1).toLowerCase();
@@ -83,7 +89,7 @@ async function hangman(message) {
 
         // Edit embed with new letters
         const edit_embed = new Discord.MessageEmbed()
-                            .setTitle('A game of Hangman')
+                            .setTitle(`A game of Hangman${solo ? " (solo mode)" : ''}`)
                             .setDescription(incorrect_letters.join(", "))
                             .setFooter(embed_letters)
                             .setImage(hangman_imgs[incorrect_letters.length]); //sets the hangman image
@@ -116,6 +122,6 @@ client.on("message", (message) => {
     const command = args.shift().toLowerCase();
 
     if(command === "hangman") {
-        hangman(message);
+        hangman(message, args);
     }
 })
